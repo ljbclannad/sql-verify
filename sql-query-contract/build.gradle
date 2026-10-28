@@ -1,0 +1,11 @@
+plugins {
+    id 'java-library'
+}
+
+dependencies {
+    implementation 'cn.hutool:hutool-all:5.8.25'
+    implementation 'com.alibaba.fastjson2:fastjson2:2.0.64'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.3'
+}

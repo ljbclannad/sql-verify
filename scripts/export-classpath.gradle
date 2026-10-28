@@ -1,0 +1,28 @@
+// 临时注册任务导出目标模块运行时 classpath，不修改目标工程构建文件。
+gradle.projectsEvaluated {
+    def properties = gradle.startParameter.projectProperties
+    String modulePath = properties.get('sqlToolTargetModule') ?: ':'
+    def target = gradle.rootProject.findProject(modulePath)
+    if (target == null || !target.plugins.hasPlugin('java')) {
+        throw new GradleException("目标模块不存在或未应用 Java 插件：${modulePath}")
+    }
+    String outputPath = properties.get('sqlToolClasspathOutput')
+    if (outputPath == null || outputPath.isBlank()) {
+        throw new GradleException('请用 -PsqlToolClasspathOutput 指定 classpath 清单的绝对路径')
+    }
+    File output = new File(outputPath)
+    if (!output.isAbsolute()) throw new GradleException('sqlToolClasspathOutput 必须是绝对路径')
+    gradle.rootProject.tasks.register('sqlToolExportClasspath') {
+        group = 'verification'
+        description = '导出目标模块的运行时 classpath，供外部 SQL 工具使用'
+        dependsOn target.sourceSets.main.runtimeClasspath
+        doLast {
+            output.parentFile.mkdirs()
+            // 没有源码或资源时，Gradle 仍声明输出目录，但不会实际创建。
+            def outputs = target.sourceSets.main.output.files
+            def paths = target.sourceSets.main.runtimeClasspath.files.findAll { it.exists() || !outputs.contains(it) }
+            output.setText(paths.collect { it.canonicalPath }.join('\n') + '\n', 'UTF-8')
+            println "classpath 清单：${output}"
+        }
+    }
+}

@@ -1,0 +1,84 @@
+{
+  "createdAt": "2026-10-10T09:00:00",
+  "mode": "DML_ROLLBACK",
+  "runStatus": "STOPPED",
+  "stopReason": "示例：恢复读取未确认",
+  "rows": 30,
+  "comparisonImplemented": true,
+  "selectedCases": 2,
+  "allowedTables": [
+    "demo_order"
+  ],
+  "summary": {
+    "passed": 0,
+    "failed": 1,
+    "inconclusive": 0,
+    "notExecuted": 1,
+    "successfulSides": 1,
+    "comparedCases": 0,
+    "cleanupFailures": 1
+  },
+  "cases": [
+    {
+      "id": "demo.update",
+      "sequence": 1,
+      "sql": "UPDATE demo_order SET status = ? WHERE id = ?",
+      "parameters": [
+        {
+          "jdbcType": "VARCHAR",
+          "value": "DONE"
+        },
+        {
+          "jdbcType": "INTEGER",
+          "value": 1001
+        }
+      ],
+      "expectedAffectedRows": 1,
+      "source": {
+        "environment": {
+          "status": "CONNECTED",
+          "catalog": "source_demo"
+        },
+        "execution": "SUCCESS",
+        "baseline": "PASS",
+        "assertion": "PASS",
+        "dmlAttempted": true,
+        "affectedRows": 1,
+        "rollback": "SUCCESS",
+        "restoration": "INCONCLUSIVE",
+        "cleanup": "UNKNOWN",
+        "close": "SUCCESS",
+        "errors": [
+          {
+            "stage": "RESTORE",
+            "queryStage": "READ",
+            "sqlState": "HY000",
+            "message": "示例恢复读取错误"
+          }
+        ]
+      },
+      "target": {
+        "execution": "NOT_EXECUTED",
+        "baseline": "NOT_EVALUATED",
+        "assertion": "NOT_EVALUATED",
+        "dmlAttempted": false,
+        "rollback": "NOT_REQUIRED",
+        "restoration": "NOT_REQUIRED",
+        "cleanup": "PASS",
+        "reason": "源侧清理未确认，目标侧未执行"
+      },
+      "comparison": {
+        "status": "INCONCLUSIVE",
+        "reason": "双侧前置条件未成立",
+        "differences": []
+      },
+      "verification": "FAIL"
+    },
+    {
+      "id": "demo.followup",
+      "sequence": 2,
+      "verification": "NOT_EXECUTED",
+      "reason": "示例：恢复读取未确认"
+    }
+  ]
+}

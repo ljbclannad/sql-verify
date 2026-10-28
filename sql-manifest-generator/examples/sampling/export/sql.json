@@ -1,0 +1,38 @@
+[
+  {
+    "id": "example.InventoryMapper.search",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryMapper.xml",
+    "template": "<select>SELECT s.code,w.label,s.quantity FROM stock s INNER JOIN warehouse w ON w.code=s.warehouse\n<where><if test=\"!includeInactive\">s.active=0</if>\n<if test=\"warehouseLabel != null and warehouseLabel != ''\">AND w.label LIKE concat('%',#{warehouseLabel},'%')</if>\n<if test=\"codes != null\">AND s.code IN <foreach collection=\"codes\" item=\"code\" open=\"(\" close=\")\" separator=\",\">#{code}</foreach></if></where></select>"
+  },
+  {
+    "id": "example.InventoryMapper.byWarehouse",
+    "sourceType": "ANNOTATION",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryMapper.java",
+    "parameterizedSql": "SELECT s.code,s.quantity FROM stock s INNER JOIN warehouse w ON w.code=s.warehouse WHERE s.active=0 AND w.code=?"
+  },
+  {
+    "id": "example.InventoryMapper.count",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryMapper.xml",
+    "template": "<select>SELECT COUNT(*) FROM stock WHERE active=0</select>",
+    "parameterizedSql": "SELECT COUNT(*) FROM stock WHERE active=0"
+  },
+  {
+    "id": "example.InventoryMapper.totals",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryMapper.xml",
+    "template": "<select>SELECT warehouse,SUM(quantity) AS total FROM stock WHERE active=0 GROUP BY warehouse HAVING SUM(quantity) &gt; #{minimum} ORDER BY warehouse</select>"
+  },
+  {
+    "id": "example.InventoryMapper.pages",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryMapper.xml",
+    "template": "<select>SELECT code,quantity FROM stock WHERE active=0 ORDER BY code LIMIT #{size} OFFSET #{start}</select>"
+  }
+]

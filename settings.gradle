@@ -1,0 +1,3 @@
+rootProject.name = 'sql-tool'
+
+include 'sql-query-contract', 'sql-extractor', 'sql-verifier', 'sql-manifest-generator'

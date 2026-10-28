@@ -1,0 +1,194 @@
+import groovy.json.JsonSlurper
+import java.nio.file.Files
+
+// 根入口与模块入口使用同一启动逻辑，所有接入路径保持以仓库根目录为基准。
+def extractorProject = project(':sql-extractor')
+
+def optionNames = ['packages', 'xml-root', 'output', 'injector', 'handlers', 'sources',
+                   'source-root', 'source-packages', 'exclude-paths', 'max-combinations']
+def pathOptions = ['xml-root', 'output', 'source-root']
+def runtimeNames = ['classpath', 'classpath-file', 'project-root', 'module']
+def resolvePath = { File base, String path ->
+    File value = new File(path)
+    (value.isAbsolute() ? value : new File(base, path)).canonicalFile
+}
+
+// 仅在运行任务执行时读取配置，独立编译和测试不访问目标工程。
+def runtimeRequest = null
+def readRuntimeRequest = {
+    if (runtimeRequest != null) return runtimeRequest
+    def rawArgs = new ArrayList(tasks.named('run').get().args)
+    def configOption = providers.gradleProperty('sqlExportConfig').orNull
+    def config = [:]
+    File configBase = rootProject.projectDir
+    def cliArgs = rawArgs
+    def options = [:]
+    if (configOption != null || rawArgs.isEmpty()) {
+        if (!rawArgs.isEmpty()) throw new GradleException('--args 与 -PsqlExportConfig 请二选一')
+        File configFile = rootProject.file(configOption ?: 'config/extractor/demo.json')
+        if (!configFile.isFile()) throw new GradleException('配置文件不存在：' + configFile)
+        config = new JsonSlurper().parse(configFile, 'UTF-8')
+        if (!(config instanceof Map)) throw new GradleException('配置必须是 JSON 对象')
+        def unknown = config.keySet() - (optionNames + runtimeNames)
+        if (!unknown.isEmpty()) throw new GradleException('未知配置项：' + unknown)
+        configBase = configFile.canonicalFile.parentFile
+        cliArgs = []
+        config.each { name, value ->
+            if (optionNames.contains(name)) {
+                if (!(value instanceof String || value instanceof Number)) {
+                    throw new GradleException('配置项 ' + name + ' 必须是字符串或数值')
+                }
+                String text = value.toString()
+                if (pathOptions.contains(name) && !text.isBlank()) text = resolvePath(configBase, text).path
+                options[name] = text
+                cliArgs.addAll(['--' + name, text])
+            }
+        }
+    } else {
+        if (rawArgs.size() % 2 != 0) throw new GradleException('CLI 参数格式必须为 --名称 值')
+        for (int i = 0; i < rawArgs.size(); i += 2) {
+            String name = rawArgs[i]
+            if (!name.startsWith('--') || !optionNames.contains(name.substring(2))) {
+                throw new GradleException('未知 CLI 参数：' + name)
+            }
+            options[name.substring(2)] = rawArgs[i + 1]
+        }
+    }
+
+    // 在调用业务构建前检查必要参数及来源，避免错误配置触发编译。
+    ['packages', 'xml-root', 'output'].each { name ->
+        if (!options[name] || options[name].isBlank()) throw new GradleException('必须指定 --' + name)
+    }
+    def sourceNames = ['xml', 'annotation', 'provider', 'mybatis-plus', 'java']
+    def sources = new LinkedHashSet()
+    (options.containsKey('sources') ? options['sources'] : 'all').split(',', -1).each { item ->
+        String source = item.trim().toLowerCase(Locale.ROOT)
+        if (source == 'all') sources.addAll(sourceNames)
+        else if (sourceNames.contains(source)) sources.add(source)
+        else throw new GradleException('未知SQL来源：' + item)
+    }
+    def entries = config.containsKey('classpath') ? config['classpath'] : []
+    if (!(entries instanceof List) || entries.any { !(it instanceof String) || it.isBlank() }) {
+        throw new GradleException('classpath 必须是非空路径字符串组成的数组')
+    }
+    def classpathOption = providers.gradleProperty('sqlExportClasspathFile').orNull
+    def classpathValue = classpathOption != null ? classpathOption : config.get('classpath-file')
+    File listFile = null
+    if (classpathValue != null) {
+        if (!(classpathValue instanceof String) || classpathValue.isBlank()) {
+            throw new GradleException('classpath-file 必须是非空路径字符串')
+        }
+        listFile = resolvePath(classpathOption != null ? rootProject.projectDir : configBase, classpathValue)
+    }
+    def projectValue = config.get('project-root')
+    if (config.containsKey('project-root') && (!(projectValue instanceof String) || projectValue.isBlank())) {
+        throw new GradleException('project-root 必须是非空路径字符串')
+    }
+    def moduleValue = config.containsKey('module') ? config['module'] : ':'
+    if (!(moduleValue instanceof String) || moduleValue.isBlank() || !moduleValue.startsWith(':')) {
+        throw new GradleException('module 必须是以 : 开头的 Gradle 模块路径')
+    }
+    if (config.containsKey('module') && projectValue == null) {
+        throw new GradleException('module 需要同时配置 project-root')
+    }
+    File targetRoot = projectValue == null ? null : resolvePath(configBase, projectValue)
+    runtimeRequest = [cliArgs: cliArgs, configBase: configBase, entries: entries, listFile: listFile,
+                      targetRoot: targetRoot, module: moduleValue,
+                      autoClasspath: targetRoot != null && entries.isEmpty() && listFile == null && sources != ['java'].toSet()]
+    return runtimeRequest
+}
+
+// 每次生成新的清单，失败时不复用此前构建的 classpath。
+File preparedClasspath = null
+def prepareTargetClasspath = tasks.register('prepareTargetClasspath') {
+    group = 'application'
+    description = '按 project-root/module 自动编译目标项目并准备运行时 classpath'
+    // 根目录任务选择器也会选中同名子模块任务，根入口参与时只准备一次。
+    onlyIf {
+        project == rootProject ||
+                (!gradle.taskGraph.hasTask(':run') && !gradle.taskGraph.hasTask(':prepareTargetClasspath'))
+    }
+    doLast {
+        def request = readRuntimeRequest()
+        if (!request.autoClasspath) return
+        File targetRoot = request.targetRoot
+        if (!targetRoot.isDirectory()) throw new GradleException('目标项目目录不存在：' + targetRoot)
+        if (rootProject.allprojects.any { targetRoot == it.projectDir.canonicalFile }) {
+            throw new GradleException('目标工程不能是 sql-tool 自身或其模块')
+        }
+        boolean windows = System.getProperty('os.name').toLowerCase(Locale.ROOT).contains('windows')
+        File wrapper = new File(targetRoot, windows ? 'gradlew.bat' : 'gradlew')
+        if (!wrapper.isFile()) throw new GradleException('目标项目缺少 Gradle Wrapper：' + wrapper)
+        File base = rootProject.layout.buildDirectory.dir('target-classpath').get().asFile
+        Files.createDirectories(base.toPath())
+        File directory = Files.createTempDirectory(base.toPath(), 'run-').toFile()
+        File output = new File(directory, 'classpath.txt')
+        def command = windows ? ['cmd', '/d', '/c', wrapper.absolutePath] :
+                (wrapper.canExecute() ? [wrapper.absolutePath] : ['sh', wrapper.absolutePath])
+        command.addAll(['--no-daemon', '--console=plain', '-p', targetRoot.path,
+                        '-I', rootProject.file('scripts/export-classpath.gradle').absolutePath,
+                        'sqlToolExportClasspath', '-PsqlToolTargetModule=' + request.module,
+                        '-PsqlToolClasspathOutput=' + output.absolutePath])
+        if (gradle.startParameter.offline) command.add('--offline')
+        logger.lifecycle('自动准备目标项目 classpath：' + targetRoot + '（模块 ' + request.module + '）')
+        def result = project.exec {
+            workingDir targetRoot
+            commandLine command
+            ignoreExitValue = true
+        }
+        if (result.exitValue != 0) {
+            throw new GradleException('目标项目构建失败（退出码 ' + result.exitValue + '），已停止 SQL 提取；请查看上方 Gradle 日志')
+        }
+        if (!output.isFile() || output.getText('UTF-8').isBlank()) {
+            throw new GradleException('目标项目未生成有效的 classpath 清单，已停止 SQL 提取')
+        }
+        preparedClasspath = output
+    }
+}
+
+// 业务类型只加入运行任务，不进入独立工具的编译与测试 classpath。
+tasks.register('run', JavaExec) {
+    group = 'application'
+    description = '运行独立 SQL 提取工具，默认使用 config/extractor/demo.json'
+    // 显式模块入口单独执行；根入口参与时避免再次提取和写出。
+    onlyIf { project == rootProject || !gradle.taskGraph.hasTask(':run') }
+    dependsOn prepareTargetClasspath
+    mainClass = 'com.kairui.tools.sqlexport.SqlExportMain'
+    classpath = extractorProject.sourceSets.main.runtimeClasspath
+    javaLauncher = extractorProject.javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    workingDir = rootProject.projectDir
+
+    doFirst {
+        def request = readRuntimeRequest()
+        setArgs(request.cliArgs)
+        def externalPaths = []
+        def addPath = { File base, String value ->
+            if (value.endsWith('/*')) {
+                File directory = resolvePath(base, value.substring(0, value.length() - 2))
+                def jars = directory.listFiles()?.findAll { it.isFile() && it.name.endsWith('.jar') }?.sort { it.name }
+                if (!jars) throw new GradleException('classpath 通配目录不存在或没有 JAR：' + directory)
+                externalPaths.addAll(jars)
+            } else {
+                File path = resolvePath(base, value)
+                if (!path.exists()) throw new GradleException('classpath 路径不存在：' + path)
+                externalPaths.add(path)
+            }
+        }
+        request.entries.each { addPath(request.configBase, it) }
+        File listFile = request.listFile
+        if (request.autoClasspath) {
+            if (preparedClasspath == null) throw new GradleException('尚未准备目标 classpath，请执行 prepareTargetClasspath')
+            listFile = preparedClasspath
+        }
+        if (listFile != null) {
+            if (!listFile.isFile()) throw new GradleException('classpath 清单不存在：' + listFile)
+            listFile.readLines('UTF-8').each { line ->
+                String entry = line.trim()
+                if (!entry.isEmpty() && !entry.startsWith('#')) addPath(listFile.parentFile, entry)
+            }
+        }
+        classpath += files(externalPaths)
+    }
+}

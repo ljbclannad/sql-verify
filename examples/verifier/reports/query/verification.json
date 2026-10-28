@@ -1,0 +1,106 @@
+{
+  "createdAt": "2026-10-10T09:00:00",
+  "rows": 30,
+  "comparisonImplemented": true,
+  "execution": {
+    "requestedConcurrency": 1,
+    "actualConcurrency": 1,
+    "resultOrder": "LOGICAL",
+    "maxUnconfirmedQueries": 1
+  },
+  "datasources": {
+    "source": {
+      "status": "CONNECTED",
+      "databaseProduct": "示例数据库",
+      "catalog": "source_demo"
+    },
+    "target": {
+      "status": "CONNECTED",
+      "databaseProduct": "示例数据库",
+      "catalog": "target_demo"
+    }
+  },
+  "summary": {
+    "selectedQueries": 2,
+    "validQueries": 1,
+    "invalidQueries": 1,
+    "successfulSides": 2,
+    "failedSides": 0,
+    "comparedQueries": 1,
+    "matchedQueries": 1,
+    "differentQueries": 0,
+    "inconclusiveQueries": 0
+  },
+  "queries": [
+    {
+      "id": "demo.precise",
+      "sequence": 1,
+      "workerId": 1,
+      "sql": "SELECT CAST(? AS DECIMAL(30,4)) AS value",
+      "parameters": [
+        {
+          "jdbcType": "DECIMAL",
+          "value": "1234567890123456789.1250"
+        }
+      ],
+      "source": {
+        "status": "SUCCESS",
+        "executeMillis": 2,
+        "readMillis": 1,
+        "readRows": 1,
+        "hasMore": false,
+        "exhausted": true,
+        "columns": [
+          {
+            "label": "value",
+            "jdbcType": "DECIMAL"
+          }
+        ],
+        "rows": [
+          [
+            "1234567890123456789.1250"
+          ]
+        ]
+      },
+      "target": {
+        "status": "SUCCESS",
+        "executeMillis": 2,
+        "readMillis": 1,
+        "readRows": 1,
+        "hasMore": false,
+        "exhausted": true,
+        "columns": [
+          {
+            "label": "value",
+            "jdbcType": "DECIMAL"
+          }
+        ],
+        "rows": [
+          [
+            "1234567890123456789.1250"
+          ]
+        ]
+      },
+      "comparison": {
+        "status": "MATCH",
+        "observedStatus": "MATCH",
+        "mode": "UNORDERED",
+        "scope": "FULL",
+        "sourceRows": 1,
+        "targetRows": 1,
+        "differenceCount": 0,
+        "differences": [],
+        "reason": "已确认范围内行数据一致"
+      }
+    },
+    {
+      "id": "demo.invalid",
+      "sequence": 2,
+      "status": "NOT_EXECUTED",
+      "error": {
+        "stage": "INPUT",
+        "message": "示例输入错误，未连接数据库"
+      }
+    }
+  ]
+}

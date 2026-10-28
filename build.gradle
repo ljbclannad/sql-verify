@@ -1,0 +1,44 @@
+plugins {
+    id 'base'
+}
+
+allprojects {
+    group = 'com.kairui.tools'
+    version = '0.1.0'
+
+    repositories {
+        mavenCentral()
+    }
+}
+
+// 子模块统一使用 JDK 17 和 UTF-8，各模块单独声明自己的运行依赖。
+subprojects {
+    plugins.withId('java') {
+        java {
+            toolchain {
+                languageVersion = JavaLanguageVersion.of(17)
+            }
+        }
+        tasks.withType(JavaCompile).configureEach {
+            options.encoding = 'UTF-8'
+        }
+        tasks.withType(Test).configureEach {
+            useJUnitPlatform()
+        }
+    }
+}
+
+// 根工程聚合构建与检查；compileJava、test 由 Gradle 任务选择器选中子模块任务。
+tasks.named('assemble') {
+    dependsOn subprojects.collect { it.path + ':assemble' }
+}
+tasks.named('check') {
+    dependsOn subprojects.collect { it.path + ':check' }
+}
+tasks.named('clean') {
+    dependsOn subprojects.collect { it.path + ':clean' }
+}
+
+// 保留根目录 run 及 --args 用法，运行时 classpath 取自提取模块。
+evaluationDependsOn(':sql-extractor')
+apply from: rootProject.file('scripts/sql-export-runtime.gradle')

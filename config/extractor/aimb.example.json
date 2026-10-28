@@ -1,0 +1,13 @@
+{
+  "project-root": "../../../aimb-yashan",
+  "module": ":aimb",
+  "packages": "com.kairui.aimb.mapper",
+  "xml-root": "../../../aimb-yashan/aimb/src/main/resources/mapper",
+  "source-root": "../../../aimb-yashan/aimb/src/main/java",
+  "source-packages": "com.kairui.aimb",
+  "injector": "com.kairui.aimb.core.mybatis.method.SqlInjector",
+  "handlers": "com.kairui.aimb.core.mybatis.handler",
+  "output": "../../build/aimb-sql-export",
+  "sources": "all",
+  "max-combinations": 256
+}

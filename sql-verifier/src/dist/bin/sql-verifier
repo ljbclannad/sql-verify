@@ -1,0 +1,21 @@
+#!/bin/sh
+
+# 按脚本所在目录定位依赖，保留调用目录用于解析 --config 的相对路径。
+APP_HOME=$(CDPATH= cd -- "$(dirname -- "$0")/.." && pwd -P) || exit 1
+if [ -n "${JAVA_HOME:-}" ]; then
+    JAVA_EXE="$JAVA_HOME/bin/java"
+    if [ ! -x "$JAVA_EXE" ]; then
+        printf '%s\n' '无法启动：JAVA_HOME 下找不到可执行的 bin/java。' >&2
+        exit 1
+    fi
+else
+    JAVA_EXE=$(command -v java) || {
+        printf '%s\n' '无法启动：请安装 Java 17，并设置 JAVA_HOME 或 PATH。' >&2
+        exit 1
+    }
+fi
+
+# JVM 自行展开 JAR 通配符；参数逐项原样转发，退出码直接交给调用方。
+exec "$JAVA_EXE" -Dfile.encoding=UTF-8 \
+    -cp "$APP_HOME/lib/*:$APP_HOME/drivers/*" \
+    com.kairui.tools.sqlverify.SqlVerifyMain "$@"

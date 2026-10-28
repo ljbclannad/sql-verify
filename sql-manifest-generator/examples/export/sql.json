@@ -1,0 +1,21 @@
+[
+  {
+    "id": "example.echo",
+    "sourceType": "PROVIDER",
+    "source": "示例提取结果",
+    "databaseId": "",
+    "parameterizedSql": "SELECT ? AS id, ? AS amount",
+    "status": "FILLED",
+    "parameterMode": "SAMPLE"
+  },
+  {
+    "id": "example.xml",
+    "sourceType": "XML",
+    "source": "示例提取结果",
+    "databaseId": "",
+    "template": "<select id=\"xml\">SELECT 1 AS n <if test=\"name != null\">WHERE #{name} IS NOT NULL</if></select>",
+    "parameterizedSql": "SELECT 1 AS n WHERE ? IS NOT NULL",
+    "status": "FILLED",
+    "parameterMode": "SAMPLE"
+  }
+]

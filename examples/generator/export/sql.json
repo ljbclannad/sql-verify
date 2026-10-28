@@ -1,0 +1,136 @@
+[
+  {
+    "combinationWarnings": [],
+    "databaseId": "",
+    "id": "com.kairui.aimb.mapper.ai.menu.MenuRoleRelationMapper.deleteById",
+    "parameterMode": "SAMPLE",
+    "parameterizedSql": "DELETE FROM ai_menu_role_relation WHERE id=?",
+    "source": "com/kairui/aimb/mapper/ai/menu/MenuRoleRelationMapper.java (best guess)",
+    "sourceType": "GENERATED",
+    "sql": "DELETE FROM ai_menu_role_relation WHERE id=?",
+    "status": "FILLED",
+    "tableNameAdaptation": {
+      "adapter": "com.kairui.tools.sqlexport.adaptation.aimb.AimbSqlExtractionAdapter",
+      "originalTemplateFingerprint": "1afbede03b96eb6854793d9371abd5b087fd1b4d89901afa35868d8a92eb63d5",
+      "rewrites": {
+        "menu_role_relation": "ai_menu_role_relation"
+      }
+    },
+    "template": "DELETE FROM ai_menu_role_relation WHERE id=#{id}",
+    "variants": [],
+    "wrapperSources": []
+  },
+  {
+    "combinationWarnings": [],
+    "combinationsComplete": true,
+    "databaseId": "",
+    "id": "com.kairui.aimb.mapper.ai.menu.MenuRoleRelationMapper.findList",
+    "parameterMode": "SAMPLE",
+    "parameterizedSql": "SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = ?\n         \n         \n            AND mr.version = ?\n         \n        )",
+    "source": "src/main/resources/mapper/ai/menu/MenuRoleRelationMapper.xml",
+    "sourceType": "XML",
+    "sql": "SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = ?\n         \n         \n            AND mr.version = ?\n         \n        )",
+    "status": "FILLED",
+    "tableNameAdaptation": {
+      "adapter": "com.kairui.tools.sqlexport.adaptation.aimb.AimbSqlExtractionAdapter",
+      "originalTemplateFingerprint": "349f0b023a2aa001e9966da90f683c7e820029ca7ea83b6395496a004769c821",
+      "rewrites": {}
+    },
+    "template": "<select id=\"findList\" resultType=\"com.kairui.aimb.model.ai.menu.MenuVo\">\n        SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = #{dto.role}\n        <if test=\"dto.version == null\">\n            AND mr.version IS NULL\n        </if>\n        <if test=\"dto.version != null\">\n            AND mr.version = #{dto.version}\n        </if>\n        )\n    </select>",
+    "variants": [
+      {
+        "parameterizedSql": "SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = ?\n         \n         \n            AND mr.version = ?\n         \n        )",
+        "sql": "SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = ?\n         \n         \n            AND mr.version = ?\n         \n        )"
+      },
+      {
+        "parameterizedSql": "SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = ?\n         \n            AND mr.version IS NULL\n         \n         \n        )",
+        "sql": "SELECT m.id,\n        m.pid,\n        m.name,\n        m.url,\n        m.icon,\n        m.icon_selected,\n        m.version,\n        m.sort\n        FROM ai_menu m\n        WHERE m.id IN (SELECT mr.menu_id\n        FROM ai_menu_role_relation mr\n        WHERE mr.role = ?\n         \n            AND mr.version IS NULL\n         \n         \n        )"
+      }
+    ],
+    "wrapperSources": []
+  },
+  {
+    "combinationWarnings": [],
+    "databaseId": "",
+    "id": "com.kairui.aimb.mapper.ai.menu.MenuRoleRelationMapper.insert",
+    "parameterMode": "SAMPLE",
+    "parameterizedSql": "INSERT INTO ai_menu_role_relation  ( id, menu_id, role, version )  VALUES (  ?, ?, ?, ?  )",
+    "source": "com/kairui/aimb/mapper/ai/menu/MenuRoleRelationMapper.java (best guess)",
+    "sourceType": "GENERATED",
+    "sql": "INSERT INTO ai_menu_role_relation  ( id, menu_id, role, version )  VALUES (  ?, ?, ?, ?  )",
+    "status": "FILLED",
+    "tableNameAdaptation": {
+      "adapter": "com.kairui.tools.sqlexport.adaptation.aimb.AimbSqlExtractionAdapter",
+      "originalTemplateFingerprint": "ba442780d4b2742ce22cfa91028730e4da9ef1618fe8722c925124c33e9ddfe9",
+      "rewrites": {
+        "menu_role_relation": "ai_menu_role_relation"
+      }
+    },
+    "template": "<script> `INSERT` INTO ai_menu_role_relation <trim prefix=\"(\" suffix=\")\" suffixOverrides=\",\"> id, menu_id, role, version, </trim> VALUES ( <trim suffixOverrides=\",\"> #{id}, #{menuId}, #{role}, #{version}, </trim> ) </script>",
+    "variants": [],
+    "wrapperSources": []
+  },
+  {
+    "combinationWarnings": [],
+    "databaseId": "",
+    "id": "com.kairui.aimb.mapper.ai.menu.MenuRoleRelationMapper.selectBatchIds",
+    "parameterMode": "SAMPLE",
+    "parameterizedSql": "SELECT id,menu_id,role,version FROM ai_menu_role_relation WHERE id IN (   ?  )",
+    "source": "com/kairui/aimb/mapper/ai/menu/MenuRoleRelationMapper.java (best guess)",
+    "sourceType": "GENERATED",
+    "sql": "SELECT id,menu_id,role,version FROM ai_menu_role_relation WHERE id IN (   ?  )",
+    "status": "FILLED",
+    "tableNameAdaptation": {
+      "adapter": "com.kairui.tools.sqlexport.adaptation.aimb.AimbSqlExtractionAdapter",
+      "originalTemplateFingerprint": "d61e8822f538bd8f11899f4fedf6d7f3cbfa689208901017cbaa7a9e61f322fb",
+      "rewrites": {
+        "menu_role_relation": "ai_menu_role_relation"
+      }
+    },
+    "template": "<script>SELECT id,menu_id,role,version FROM ai_menu_role_relation WHERE id IN (<foreach collection=\"coll\" item=\"item\" separator=\",\"> #{item} </foreach>) </script>",
+    "variants": [],
+    "wrapperSources": []
+  },
+  {
+    "combinationWarnings": [],
+    "databaseId": "",
+    "id": "com.kairui.aimb.mapper.ai.menu.MenuRoleRelationMapper.selectById",
+    "parameterMode": "SAMPLE",
+    "parameterizedSql": "SELECT id,menu_id,role,version FROM ai_menu_role_relation WHERE id=?",
+    "source": "com/kairui/aimb/mapper/ai/menu/MenuRoleRelationMapper.java (best guess)",
+    "sourceType": "GENERATED",
+    "sql": "SELECT id,menu_id,role,version FROM ai_menu_role_relation WHERE id=?",
+    "status": "FILLED",
+    "tableNameAdaptation": {
+      "adapter": "com.kairui.tools.sqlexport.adaptation.aimb.AimbSqlExtractionAdapter",
+      "originalTemplateFingerprint": "f805d3f5a3a8ca5b4fca650f72b63d86191abe65285487e0a9a035a1cf70e65d",
+      "rewrites": {
+        "menu_role_relation": "ai_menu_role_relation"
+      }
+    },
+    "template": "SELECT id,menu_id,role,version FROM ai_menu_role_relation WHERE id=#{id}",
+    "variants": [],
+    "wrapperSources": []
+  },
+  {
+    "combinationWarnings": [],
+    "databaseId": "",
+    "id": "com.kairui.aimb.mapper.ai.menu.MenuRoleRelationMapper.updateById",
+    "parameterMode": "SAMPLE",
+    "parameterizedSql": "UPDATE ai_menu_role_relation  SET menu_id=?, role=?, version=?  WHERE id=?",
+    "source": "com/kairui/aimb/mapper/ai/menu/MenuRoleRelationMapper.java (best guess)",
+    "sourceType": "GENERATED",
+    "sql": "UPDATE ai_menu_role_relation  SET menu_id=?, role=?, version=?  WHERE id=?",
+    "status": "FILLED",
+    "tableNameAdaptation": {
+      "adapter": "com.kairui.tools.sqlexport.adaptation.aimb.AimbSqlExtractionAdapter",
+      "originalTemplateFingerprint": "a9256ebed27f7c6ef8d147e93094b2ea81ff27bf3f8ae1bddd278fd90063a9d4",
+      "rewrites": {
+        "menu_role_relation": "ai_menu_role_relation"
+      }
+    },
+    "template": "<script> `UPDATE` ai_menu_role_relation <set> <if test=\"et['menuId'] != null\">menu_id=#{et.menuId},</if> <if test=\"et['role'] != null\">role=#{et.role},</if> <if test=\"et['version'] != null\">version=#{et.version},</if> </set> WHERE id=#{et.id} </script>",
+    "variants": [],
+    "wrapperSources": []
+  }
+]

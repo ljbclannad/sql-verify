@@ -1,0 +1,7 @@
+{
+  "extractorConfig": "../extractor/pipeline.extractor.example.json",
+  "generatorConfig": "../../sql-manifest-generator/config/pipeline.generator.example.json",
+  "queryVerificationConfig": "../verifier/pipeline.verification.example.json",
+  "output": "../../build/sql-pipeline",
+  "partialPolicy": "stop"
+}

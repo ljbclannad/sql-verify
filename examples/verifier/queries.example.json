@@ -1,0 +1,18 @@
+{
+  "queries": [
+    {
+      "id": "patient.findById",
+      "sql": "SELECT id, name FROM patient WHERE id = ?",
+      "parameters": [
+        {
+          "jdbcType": "VARCHAR",
+          "value": "P001"
+        }
+      ]
+    },
+    {
+      "id": "patient.count",
+      "sql": "SELECT COUNT(*) FROM patient"
+    }
+  ]
+}

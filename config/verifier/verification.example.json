@@ -1,0 +1,44 @@
+{
+  "queries": "../../examples/verifier/queries.basic.json",
+  "output": "../../build/sql-verification",
+  "rows": 30,
+  "concurrency": 16,
+  "queryTimeoutSeconds": 30,
+  "maxResultBytes": 5242880,
+  "comparison": {
+    "orderedQueryIds": [],
+    "stableRangeQueryIds": [],
+    "expectedEmptyQueryIds": []
+  },
+  "queryIds": [
+    "smoke.ping",
+    "smoke.string",
+    "smoke.integer",
+    "smoke.bigint",
+    "smoke.decimal",
+    "smoke.boolean",
+    "smoke.date",
+    "smoke.time",
+    "smoke.timestamp",
+    "smoke.null",
+    "smoke.rows31"
+  ],
+  "datasources": {
+    "source": {
+      "driverClassName": "com.mysql.cj.jdbc.Driver",
+      "jdbcUrl": "jdbc:mysql://localhost:3306/source_database?serverTimezone=Asia/Shanghai&useSSL=false",
+      "username": "demo_user",
+      "passwordEnv": "SQL_SOURCE_PASSWORD",
+      "connectTimeoutMillis": 10000,
+      "socketTimeoutMillis": 30000
+    },
+    "target": {
+      "driverClassName": "com.mysql.cj.jdbc.Driver",
+      "jdbcUrl": "jdbc:mysql://localhost:3307/target_database?serverTimezone=Asia/Shanghai&useSSL=false",
+      "username": "demo_user",
+      "passwordEnv": "SQL_TARGET_PASSWORD",
+      "connectTimeoutMillis": 10000,
+      "socketTimeoutMillis": 30000
+    }
+  }
+}

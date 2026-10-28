@@ -1,0 +1,62 @@
+{
+  "findAllByOrgList": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findCacheList": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findDetail": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findDetailList": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findDoctorByOrgCode": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findList": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findLoginVo": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findQueryList": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findTeamUserIdList": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  },
+  "findUserIdByOrgCode": {
+    "source": "SUCCESS",
+    "target": "SUCCESS",
+    "observedStatus": "MATCH",
+    "scope": "FULL"
+  }
+}

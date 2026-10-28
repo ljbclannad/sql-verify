@@ -1,0 +1,26 @@
+{
+  "output": "../../build/sql-verification",
+  "rows": 30,
+  "concurrency": 16,
+  "queryTimeoutSeconds": 30,
+  "maxResultBytes": 5242880,
+  "comparison": {
+    "orderedQueryIds": [],
+    "stableRangeQueryIds": [],
+    "expectedEmptyQueryIds": []
+  },
+  "datasources": {
+    "source": {
+      "driverClassName": "com.mysql.cj.jdbc.Driver",
+      "jdbcUrl": "jdbc:mysql://localhost:3306/source_test?serverTimezone=Asia/Shanghai&useSSL=false",
+      "username": "readonly",
+      "passwordEnv": "SQL_SOURCE_PASSWORD"
+    },
+    "target": {
+      "driverClassName": "com.mysql.cj.jdbc.Driver",
+      "jdbcUrl": "jdbc:mysql://localhost:3307/target_test?serverTimezone=Asia/Shanghai&useSSL=false",
+      "username": "readonly",
+      "passwordEnv": "SQL_TARGET_PASSWORD"
+    }
+  }
+}

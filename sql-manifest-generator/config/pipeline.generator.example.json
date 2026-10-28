@@ -1,0 +1,15 @@
+{
+  "input": "../../build/sql-export/replace-with-run-directory",
+  "output": "../build/sql-generated",
+  "datasource": {
+    "driverClassName": "com.mysql.cj.jdbc.Driver",
+    "jdbcUrl": "jdbc:mysql://localhost:3306/source_test?serverTimezone=Asia/Shanghai&useSSL=false",
+    "username": "readonly",
+    "passwordEnv": "SQL_SAMPLE_PASSWORD"
+  },
+  "excludedTables": [],
+  "sampleRows": 3,
+  "maxXmlScenariosPerStatement": 10,
+  "maxCandidateAttempts": 128,
+  "queryTimeoutSeconds": 15
+}

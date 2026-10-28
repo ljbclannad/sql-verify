@@ -1,0 +1,126 @@
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+
+plugins {
+    id 'application'
+}
+
+def packageReadmeReplacements = [
+        '[项目说明](../README.md#统一构建与检查)': '完整源码仓库根 README 的“统一构建与检查”一节',
+        '[统一入口说明](../docs/统一入口使用说明.md)': '完整源码仓库 docs/统一入口使用说明.md',
+        '[阶段三设计](../docs/阶段三-场景与运行覆盖规划.md)': '完整源码仓库 docs/阶段三-场景与运行覆盖规划.md'
+]
+def packageConfigReplacements = ['"output": "../build/sql-generated"': '"output": "../reports"']
+
+dependencies {
+    implementation project(':sql-query-contract')
+    implementation 'cn.hutool:hutool-all:5.8.25'
+    implementation 'com.alibaba.fastjson2:fastjson2:2.0.64'
+    implementation 'org.mybatis:mybatis:3.5.16'
+    implementation 'com.github.jsqlparser:jsqlparser:4.9'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.3'
+    testImplementation 'com.h2database:h2:2.2.224'
+}
+application { mainClass = 'com.kairui.tools.sqlgenerate.GeneratorMain' }
+tasks.named('test') {
+    useJUnitPlatform()
+    exclude '**/VerifierCompatibilityTest.class'
+    exclude '**/RealDatabaseVerificationTest.class'
+    exclude '**/MapperRealDatabaseVerificationTest.class'
+    dependsOn tasks.named('distZip')
+    inputs.file(tasks.named('distZip').flatMap { it.archiveFile }).withPropertyName('generatorDistribution')
+    doFirst { systemProperty 'generatorZip', tasks.named('distZip').get().archiveFile.get().asFile.absolutePath }
+}
+tasks.register('mapperRealDatabaseTest', Test) {
+    description = '显式执行指定 Mapper 提取文件的只读真实双库回归'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+    include '**/MapperRealDatabaseVerificationTest.class'
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+    doFirst {
+        ['sqlVerifyConfig', 'sqlVerifierLib', 'sqlRegressionFile'].each { name ->
+            def value = providers.gradleProperty(name).orNull
+            if (value == null || !file(value).exists()) throw new GradleException("请通过 -P${name} 指定现有输入")
+            systemProperty name, file(value).absolutePath
+        }
+        def xml = providers.gradleProperty('sqlRegressionXml').orNull
+        if (xml != null) {
+            if (!file(xml).isFile()) throw new GradleException('sqlRegressionXml 必须指向现有 Mapper XML')
+            systemProperty 'sqlRegressionXml', file(xml).absolutePath
+        }
+        systemProperty 'mapperDatabaseOutput', layout.buildDirectory.dir('mapper-db-verification/user-doctor').get().asFile.absolutePath
+    }
+}
+tasks.register('realDatabaseTest', Test) {
+    description = '显式复用验证器本地双库配置，对生成的固定查询进行真实执行与比较'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+    include '**/RealDatabaseVerificationTest.class'
+    outputs.upToDateWhen { false }
+    outputs.cacheIf { false }
+    doFirst {
+        def config = providers.gradleProperty('sqlVerifyConfig').orNull
+        def libs = providers.gradleProperty('sqlVerifierLib').orNull
+        if (config == null || !file(config).isFile()) throw new GradleException('请通过 -PsqlVerifyConfig 指定既有验证器双库配置')
+        if (libs == null || !file(libs).isDirectory()) throw new GradleException('请通过 -PsqlVerifierLib 指定既有验证器运行包 lib 目录')
+        systemProperty 'sqlVerifyConfig', file(config).absolutePath
+        systemProperty 'sqlVerifierLib', file(libs).absolutePath
+        systemProperty 'realDatabaseOutput', layout.buildDirectory.dir('real-db-verification').get().asFile.absolutePath
+    }
+}
+tasks.register('compatibilityTest', Test) {
+    dependsOn ':sql-verifier:installDist'
+    description = '通过现有验证器外部 CLI 在两侧 H2 夹具上执行生成清单'
+    group = 'verification'
+    testClassesDirs = sourceSets.test.output.classesDirs
+    classpath = sourceSets.test.runtimeClasspath
+    useJUnitPlatform()
+    include '**/VerifierCompatibilityTest.class'
+    // 外部验证器 JAR 改变时重新检查，不能只按生成器自身输入判断任务已完成。
+    inputs.files(providers.provider {
+        def libs = providers.gradleProperty('sqlVerifierLib').orNull
+        libs == null ? [] : fileTree(libs) { include '*.jar' }
+    }).withPropertyName('verifierRuntime')
+    doFirst {
+        def libs = providers.gradleProperty('sqlVerifierLib').orNull
+        if (libs == null || !file(libs).isDirectory()) throw new GradleException('请通过 -PsqlVerifierLib 指定现有验证器运行包 lib 目录')
+        systemProperty 'sqlVerifierLib', file(libs).absolutePath
+    }
+}
+distributions {
+    main {
+        contents {
+            from('README.md') {
+                // 工作区说明只存在于完整源码仓库，独立包中保留文字指引。
+                filter { line -> packageReadmeReplacements.inject(line) { text, entry -> text.replace(entry.key, entry.value) } }
+            }
+            from('config') {
+                include 'generator*.json'
+                into 'config'
+                // 源码示例归属 build，独立运行包使用包内 reports，不依赖构建目录。
+                filesMatching('generator*.json') {
+                    filter { line -> packageConfigReplacements.inject(line) { text, entry -> text.replace(entry.key, entry.value) } }
+                }
+            }
+            from('examples') { into 'examples' }
+            from('docs') { into 'docs' }
+        }
+    }
+}
+// 转换规则影响交付内容；显式纳入输入，避免只按源文件判断归档与安装目录是否最新。
+['distZip', 'distTar', 'installDist'].each { name ->
+    tasks.named(name) {
+        inputs.property('packageReadmeReplacements', packageReadmeReplacements)
+        inputs.property('packageConfigReplacements', packageConfigReplacements)
+    }
+}
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}

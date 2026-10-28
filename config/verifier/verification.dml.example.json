@@ -1,0 +1,34 @@
+{
+  "dmlCases": "../../examples/verifier/dml-cases.design.json",
+  "output": "../../build/sql-dml-verification",
+  "rows": 30,
+  "concurrency": 1,
+  "queryTimeoutSeconds": 30,
+  "maxResultBytes": 5242880,
+  "allowedTables": [
+    "demo_order"
+  ],
+  "caseIds": [
+    "order.insert",
+    "order.update-status",
+    "order.delete"
+  ],
+  "datasources": {
+    "source": {
+      "driverClassName": "com.mysql.cj.jdbc.Driver",
+      "jdbcUrl": "jdbc:mysql://localhost:3306/source_test?serverTimezone=Asia/Shanghai&useAffectedRows=true",
+      "username": "demo_user",
+      "passwordEnv": "SQL_SOURCE_PASSWORD",
+      "connectTimeoutMillis": 10000,
+      "socketTimeoutMillis": 30000
+    },
+    "target": {
+      "driverClassName": "com.mysql.cj.jdbc.Driver",
+      "jdbcUrl": "jdbc:mysql://localhost:3307/target_test?serverTimezone=Asia/Shanghai&useAffectedRows=true",
+      "username": "demo_user",
+      "passwordEnv": "SQL_TARGET_PASSWORD",
+      "connectTimeoutMillis": 10000,
+      "socketTimeoutMillis": 30000
+    }
+  }
+}

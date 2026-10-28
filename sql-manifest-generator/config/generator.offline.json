@@ -1,0 +1,34 @@
+{
+  "input": "../examples/export",
+  "output": "../build/sql-generated",
+  "statements": {
+    "example.echo": {
+      "scenarios": [
+        {
+          "parameters": [
+            {
+              "jdbcType": "BIGINT",
+              "value": "9223372036854775806"
+            },
+            {
+              "jdbcType": "DECIMAL",
+              "value": "1234567890123456789.1250"
+            }
+          ]
+        }
+      ]
+    },
+    "example.xml": {
+      "scenarios": [
+        {
+          "values": {
+            "name": {
+              "jdbcType": "VARCHAR",
+              "value": "示例"
+            }
+          }
+        }
+      ]
+    }
+  }
+}

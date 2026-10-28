@@ -1,0 +1,337 @@
+{
+  "input": "../examples/scenarios/export",
+  "output": "../build/sql-generated",
+  "maxCandidateAttempts": 32,
+  "statements": {
+    "example.UserMapper.find": {
+      "scenarios": [
+        {
+          "name": "baseline",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "test-enabled",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": true
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin-without-org",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "sa"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 1
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "admin-six",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "sa"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "123456"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "doctor-six",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "123456"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "search-null",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": null
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "search-empty",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": ""
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              }
+            ]
+          }
+        },
+        {
+          "name": "ids-null",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": {
+              "jdbcType": "VARCHAR",
+              "value": null
+            }
+          }
+        },
+        {
+          "name": "ids-multiple",
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "VARCHAR",
+              "value": "D001"
+            },
+            "role": {
+              "jdbcType": "VARCHAR",
+              "value": "doctor"
+            },
+            "test": {
+              "jdbcType": "BOOLEAN",
+              "value": false
+            },
+            "dto.orgCode": {
+              "jdbcType": "VARCHAR",
+              "value": "1234567890"
+            },
+            "dto.notOrgCode": {
+              "jdbcType": "INTEGER",
+              "value": 0
+            },
+            "search": {
+              "jdbcType": "VARCHAR",
+              "value": "示例名称"
+            },
+            "userIdList": [
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D001"
+              },
+              {
+                "jdbcType": "VARCHAR",
+                "value": "D002"
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}

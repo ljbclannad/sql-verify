@@ -1,0 +1,50 @@
+{
+  "cases": [
+    {
+      "id": "order.insert",
+      "sql": "INSERT INTO demo_order (id, status, amount) VALUES (?, ?, ?)",
+      "parameters": [
+        { "jdbcType": "INTEGER", "value": 1002 },
+        { "jdbcType": "VARCHAR", "value": "PENDING" },
+        { "jdbcType": "DECIMAL", "value": "12.50" }
+      ],
+      "expectedAffectedRows": 1,
+      "probe": {
+        "sql": "SELECT id, status, amount FROM demo_order WHERE id = ? ORDER BY id",
+        "parameters": [{ "jdbcType": "INTEGER", "value": 1002 }],
+        "columnTypes": ["INTEGER", "VARCHAR", "DECIMAL"],
+        "expectedBefore": [],
+        "expectedAfter": [[1002, "PENDING", "12.50"]]
+      }
+    },
+    {
+      "id": "order.update-status",
+      "sql": "UPDATE demo_order SET status = ? WHERE id = ?",
+      "parameters": [
+        { "jdbcType": "VARCHAR", "value": "PAID" },
+        { "jdbcType": "INTEGER", "value": 1001 }
+      ],
+      "expectedAffectedRows": 1,
+      "probe": {
+        "sql": "SELECT id, status, amount FROM demo_order WHERE id = ? ORDER BY id",
+        "parameters": [{ "jdbcType": "INTEGER", "value": 1001 }],
+        "columnTypes": ["INTEGER", "VARCHAR", "DECIMAL"],
+        "expectedBefore": [[1001, "PENDING", "12.50"]],
+        "expectedAfter": [[1001, "PAID", "12.50"]]
+      }
+    },
+    {
+      "id": "order.delete",
+      "sql": "DELETE FROM demo_order WHERE id = ?",
+      "parameters": [{ "jdbcType": "INTEGER", "value": 1001 }],
+      "expectedAffectedRows": 1,
+      "probe": {
+        "sql": "SELECT id, status, amount FROM demo_order WHERE id = ? ORDER BY id",
+        "parameters": [{ "jdbcType": "INTEGER", "value": 1001 }],
+        "columnTypes": ["INTEGER", "VARCHAR", "DECIMAL"],
+        "expectedBefore": [[1001, "PENDING", "12.50"]],
+        "expectedAfter": []
+      }
+    }
+  ]
+}

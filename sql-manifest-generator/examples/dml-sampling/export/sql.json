@@ -1,0 +1,23 @@
+[
+  {
+    "id": "example.InventoryWriteMapper.insert",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryWriteMapper.xml",
+    "template": "<insert>INSERT INTO stock(code,warehouse,active,quantity) VALUES(#{entity.code},#{entity.warehouse},#{entity.active},#{entity.quantity})</insert>"
+  },
+  {
+    "id": "example.InventoryWriteMapper.update",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryWriteMapper.xml",
+    "template": "<update>UPDATE stock <set>quantity=#{entity.quantity}<if test=\"changeActive\">,active=#{entity.active}</if></set> WHERE code=#{entity.code}</update>"
+  },
+  {
+    "id": "example.InventoryWriteMapper.delete",
+    "sourceType": "XML",
+    "parameterMode": "SAMPLE",
+    "source": "example/InventoryWriteMapper.xml",
+    "template": "<delete>DELETE FROM stock WHERE code=#{entity.code}</delete>"
+  }
+]

@@ -1,0 +1,9 @@
+{
+  "packages": "example.mapper",
+  "xml-root": "../../examples/extractor/project/src/main/resources/mapper",
+  "source-root": "../../examples/extractor/project/src/main/java",
+  "source-packages": "example",
+  "output": "../../build/sql-export",
+  "sources": "all",
+  "max-combinations": 256
+}

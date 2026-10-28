@@ -1,0 +1,23 @@
+{
+  "input": "../../examples/generator/export",
+  "output": "../../build/sql-generated",
+  "datasource": {
+    "driverClassName": "com.mysql.cj.jdbc.Driver",
+    "jdbcUrl": "jdbc:mysql://localhost:3306/source_test?serverTimezone=Asia/Shanghai&useUnicode=true&characterEncoding=utf-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true&rewriteBatchedStatements=true",
+    "username": "USER",
+    "passwordFile": "../local/generator-password.txt"
+  },
+  "allowedTables": [
+    "ai_menu",
+    "ai_menu_role_relation"
+  ],
+  "simpleCaseCounts": {
+    "select": 3,
+    "insert": 3,
+    "update": 3,
+    "delete": 3
+  },
+  "maxXmlScenariosPerStatement": 10,
+  "sampleRows": 3,
+  "queryTimeoutSeconds": 15
+}

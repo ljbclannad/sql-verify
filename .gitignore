@@ -1,0 +1,38 @@
+.gradle/
+build/
+.idea/
+.run/
+.vscode/
+*.iml
+*.ipr
+*.iws
+config/local/
+__pycache__/
+/sql-manifest-generator/reports/
+
+# 本地运行结果
+/result/
+/reports/
+
+# 本地日志、JVM 崩溃与内存转储
+*.log
+hs_err_pid*
+replay_pid*
+*.hprof
+
+# 编辑器临时文件
+*.swp
+*.swo
+*~
+
+# macOS 目录缓存
+.DS_Store
+
+# Python 字节码
+*.py[cod]
+
+# 本地环境变量文件；保留公共模板
+.env
+.env.*
+!.env.example
+!.env.sample

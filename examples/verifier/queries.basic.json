@@ -1,0 +1,110 @@
+{
+  "queries": [
+    {
+      "id": "smoke.ping",
+      "sql": "SELECT 1 AS value"
+    },
+    {
+      "id": "smoke.string",
+      "sql": "SELECT ? AS text_value",
+      "parameters": [
+        {
+          "jdbcType": "VARCHAR",
+          "value": "基础查询测试"
+        }
+      ]
+    },
+    {
+      "id": "smoke.integer",
+      "sql": "SELECT ? + ? AS sum_value",
+      "parameters": [
+        {
+          "jdbcType": "INTEGER",
+          "value": 7
+        },
+        {
+          "jdbcType": "INTEGER",
+          "value": 5
+        }
+      ]
+    },
+    {
+      "id": "smoke.bigint",
+      "sql": "SELECT CAST(? AS SIGNED) AS large_value",
+      "parameters": [
+        {
+          "jdbcType": "BIGINT",
+          "value": "9223372036854775806"
+        }
+      ]
+    },
+    {
+      "id": "smoke.decimal",
+      "sql": "SELECT CAST(? AS DECIMAL(30,4)) AS decimal_value",
+      "parameters": [
+        {
+          "jdbcType": "DECIMAL",
+          "value": "1234567890123456789.1250"
+        }
+      ]
+    },
+    {
+      "id": "smoke.boolean",
+      "sql": "SELECT ? AS boolean_value",
+      "parameters": [
+        {
+          "jdbcType": "BOOLEAN",
+          "value": true
+        }
+      ]
+    },
+    {
+      "id": "smoke.date",
+      "sql": "SELECT CAST(? AS DATE) AS date_value",
+      "parameters": [
+        {
+          "jdbcType": "DATE",
+          "value": "2026-10-09"
+        }
+      ]
+    },
+    {
+      "id": "smoke.time",
+      "sql": "SELECT CAST(? AS TIME) AS time_value",
+      "parameters": [
+        {
+          "jdbcType": "TIME",
+          "value": "09:30:00"
+        }
+      ]
+    },
+    {
+      "id": "smoke.timestamp",
+      "sql": "SELECT CAST(? AS DATETIME) AS timestamp_value",
+      "parameters": [
+        {
+          "jdbcType": "TIMESTAMP",
+          "value": "2026-10-09T09:30:00"
+        }
+      ]
+    },
+    {
+      "id": "smoke.null",
+      "sql": "SELECT ? AS null_value, 'literal ?' AS literal_question",
+      "parameters": [
+        {
+          "jdbcType": "VARCHAR",
+          "value": null
+        }
+      ]
+    },
+    {
+      "id": "smoke.rows31",
+      "sql": "SELECT 1 AS n UNION ALL SELECT 2 AS n UNION ALL SELECT 3 AS n UNION ALL SELECT 4 AS n UNION ALL SELECT 5 AS n UNION ALL SELECT 6 AS n UNION ALL SELECT 7 AS n UNION ALL SELECT 8 AS n UNION ALL SELECT 9 AS n UNION ALL SELECT 10 AS n UNION ALL SELECT 11 AS n UNION ALL SELECT 12 AS n UNION ALL SELECT 13 AS n UNION ALL SELECT 14 AS n UNION ALL SELECT 15 AS n UNION ALL SELECT 16 AS n UNION ALL SELECT 17 AS n UNION ALL SELECT 18 AS n UNION ALL SELECT 19 AS n UNION ALL SELECT 20 AS n UNION ALL SELECT 21 AS n UNION ALL SELECT 22 AS n UNION ALL SELECT 23 AS n UNION ALL SELECT 24 AS n UNION ALL SELECT 25 AS n UNION ALL SELECT 26 AS n UNION ALL SELECT 27 AS n UNION ALL SELECT 28 AS n UNION ALL SELECT 29 AS n UNION ALL SELECT 30 AS n UNION ALL SELECT 31 AS n ORDER BY n"
+    },
+    {
+      "id": "smoke.error",
+      "sql": "SELECT missing_smoke_column"
+    }
+  ]
+}

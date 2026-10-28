@@ -1,0 +1,9 @@
+[
+  {
+    "id": "example.UserMapper.find",
+    "sourceType": "XML",
+    "source": "example/Mapper.xml",
+    "parameterMode": "SAMPLE",
+    "template": "<select id=\"find\">SELECT #{id} AS id <where>\n<if test=\"!test and role != 'sa'\">#{id} IS NOT NULL</if>\n<choose>\n<when test=\"role == 'sa' and dto != null and dto.notOrgCode == 1\">AND 1 = 0</when>\n<when test=\"role == 'sa' and dto != null and dto.orgCode != null and dto.orgCode.length &lt;= 6 and dto.notOrgCode == 0\">AND 1 = 1</when>\n<when test=\"dto != null and dto.orgCode != null and dto.orgCode.length &gt; 6\">AND #{dto.orgCode} IS NOT NULL</when>\n</choose>\n<if test=\"search != null and search != ''\">AND #{search} IS NOT NULL</if>\n<if test=\"userIdList != null\">AND #{id} IN <foreach collection=\"userIdList\" item=\"userId\" open=\"(\" close=\")\" separator=\",\">#{userId}</foreach></if>\n</where></select>"
+  }
+]

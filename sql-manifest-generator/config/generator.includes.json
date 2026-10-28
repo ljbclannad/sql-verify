@@ -1,0 +1,33 @@
+{
+  "input": "../examples/includes/export",
+  "output": "../build/sql-generated",
+  "xmlResources": [
+    {
+      "path": "../examples/includes/Mapper.xml",
+      "sha256": "f908640d218a24556b68f6b22bbd0b8942c6de3c99755221727ff30600324c36"
+    },
+    {
+      "path": "../examples/includes/Parts.xml",
+      "sha256": "4d4b8824be217f87c0c31b5b1c8d7d0247a1eac4c633805ae67de22b82766271"
+    }
+  ],
+  "statements": {
+    "example.IncludeMapper.find": {
+      "scenarios": [
+        {
+          "expand": false,
+          "values": {
+            "id": {
+              "jdbcType": "BIGINT",
+              "value": "9223372036854775806"
+            },
+            "name": {
+              "jdbcType": "VARCHAR",
+              "value": null
+            }
+          }
+        }
+      ]
+    }
+  }
+}

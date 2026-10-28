@@ -1,0 +1,103 @@
+import org.gradle.api.tasks.bundling.AbstractArchiveTask
+import org.gradle.api.tasks.bundling.Compression
+
+plugins {
+    id 'java'
+    id 'distribution'
+}
+
+def packageReadmeReplacements = [
+        '../../../config/': 'config/',
+        '../../../examples/verifier/': 'examples/verifier/'
+]
+def packageConfigReplacements = [
+        '../../build/sql-verification': '../../reports/queries',
+        '../../build/sql-dml-verification': '../../reports/dml',
+        '../../sql-verifier/README.md': '../../README.md'
+]
+
+// 只打包验证器运行依赖和公开示例，src/dist 提供平台脚本与首次使用说明。
+distributions {
+    main {
+        distributionBaseName = 'sql-verifier'
+        contents {
+            from('src/dist') {
+                // 源码文档链接指向仓库公共示例，随包说明使用包内相对链接。
+                filesMatching('README.md') {
+                    filter { line -> packageReadmeReplacements.inject(line) { text, entry -> text.replace(entry.key, entry.value) } }
+                }
+            }
+            from(tasks.named('jar')) { into 'lib' }
+            from(configurations.runtimeClasspath) { into 'lib' }
+            from(rootProject.file('config/verifier')) {
+                include 'verification.example.json', 'verification.dml.example.json', 'README.md'
+                into 'config/verifier'
+                // 运行包的生成结果放在 reports；输入路径沿用同一相对目录布局。
+                filter { line -> packageConfigReplacements.inject(line) { text, entry -> text.replace(entry.key, entry.value) } }
+            }
+            from(rootProject.file('examples/verifier')) {
+                include 'queries.basic.json', 'queries.example.json', 'dml-cases.design.json'
+                include 'reports/**/verification.json'
+                into 'examples/verifier'
+            }
+            filesMatching('bin/sql-verifier') { mode = 0755 }
+        }
+    }
+}
+
+// 规则变化时刷新两个归档与安装目录，保持源码说明和包内路径一致。
+['distZip', 'distTar', 'installDist'].each { name ->
+    tasks.named(name) {
+        inputs.property('packageReadmeReplacements', packageReadmeReplacements)
+        inputs.property('packageConfigReplacements', packageConfigReplacements)
+    }
+}
+
+tasks.withType(AbstractArchiveTask).configureEach {
+    preserveFileTimestamps = false
+    reproducibleFileOrder = true
+}
+
+tasks.named('distTar') {
+    compression = Compression.GZIP
+    archiveExtension = 'tar.gz'
+}
+
+// 独立进程从实际 ZIP 运行，H2 只作为测试时添加的外部驱动，不进入交付包。
+tasks.named('test') {
+    dependsOn tasks.named('distZip')
+    inputs.file(tasks.named('distZip').flatMap { it.archiveFile }).withPropertyName('verifierDistribution')
+    doFirst {
+        systemProperty 'sqlVerifierDistribution', tasks.named('distZip').get().archiveFile.get().asFile.absolutePath
+    }
+}
+
+dependencies {
+    implementation project(':sql-query-contract')
+    implementation 'cn.hutool:hutool-all:5.8.25'
+    implementation 'com.alibaba.fastjson2:fastjson2:2.0.64'
+    runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher:1.9.3'
+    testImplementation 'com.h2database:h2:2.2.224'
+}
+
+// 使用专用任务名，避免与根目录的 SQL 提取 run 入口同时执行。
+tasks.register('verify', JavaExec) {
+    group = 'verification'
+    description = '读取独立查询清单并执行两个 JDBC 数据源'
+    mainClass = 'com.kairui.tools.sqlverify.SqlVerifyMain'
+    classpath = sourceSets.main.runtimeClasspath
+    workingDir = rootProject.projectDir
+    javaLauncher = javaToolchains.launcherFor {
+        languageVersion = JavaLanguageVersion.of(17)
+    }
+    doFirst {
+        def config = providers.gradleProperty('sqlVerifyConfig').orNull
+        if (config != null) {
+            if (!args.isEmpty()) throw new GradleException('--args 与 -PsqlVerifyConfig 请二选一')
+            setArgs(['--config', rootProject.file(config).absolutePath])
+        }
+    }
+}

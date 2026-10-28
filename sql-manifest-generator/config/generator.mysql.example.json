@@ -1,0 +1,83 @@
+{
+  "input": "../../build/sql-export/替换为提取轮次",
+  "output": "../build/sql-generated",
+  "datasource": {
+    "driverClassName": "com.mysql.cj.jdbc.Driver",
+    "jdbcUrl": "jdbc:mysql://localhost:3306/sample_db?serverTimezone=Asia/Shanghai&useSSL=false",
+    "username": "sample_readonly",
+    "passwordEnv": "SQL_SAMPLE_PASSWORD"
+  },
+  "excludedTables": [],
+  "simpleCaseCounts": {
+    "insert": 3,
+    "update": 3,
+    "delete": 3,
+    "select": 3
+  },
+  "maxXmlScenariosPerStatement": 10,
+  "maxCandidateAttempts": 2048,
+  "sampleRows": 30,
+  "queryTimeoutSeconds": 30,
+  "maxReadQueries": 512,
+  "maxSampleBytes": 5242880,
+  "maxGeneratedCases": 10000,
+  "statements": {
+    "example.OrderMapper.update": {
+      "bindings": {
+        "entity.id": "id",
+        "entity.name": "name"
+      },
+      "writeValues": {
+        "name": {
+          "jdbcType": "VARCHAR",
+          "value": "验证用修改值"
+        }
+      }
+    },
+    "example.OrderMapper.insert": {
+      "scenarios": [
+        {
+          "values": {
+            "entity.id": {
+              "jdbcType": "BIGINT",
+              "value": "100001"
+            },
+            "entity.name": {
+              "jdbcType": "VARCHAR",
+              "value": "验证用新增值"
+            }
+          }
+        },
+        {
+          "values": {
+            "entity.id": {
+              "jdbcType": "BIGINT",
+              "value": "100002"
+            },
+            "entity.name": {
+              "jdbcType": "VARCHAR",
+              "value": "验证用新增值2"
+            }
+          }
+        },
+        {
+          "values": {
+            "entity.id": {
+              "jdbcType": "BIGINT",
+              "value": "100003"
+            },
+            "entity.name": {
+              "jdbcType": "VARCHAR",
+              "value": "验证用新增值3"
+            }
+          }
+        }
+      ]
+    },
+    "example.OrderMapper.findByIds": {
+      "bindings": {
+        "ids": "id"
+      }
+    }
+  }
+}

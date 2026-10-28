@@ -1,0 +1,16 @@
+{
+  "input": "../examples/sampling/export",
+  "output": "../build/sql-generated",
+  "datasource": {
+    "driverClassName": "com.mysql.cj.jdbc.Driver",
+    "jdbcUrl": "jdbc:mysql://localhost:3306/sample",
+    "username": "readonly",
+    "passwordEnv": "SQL_SAMPLE_PASSWORD"
+  },
+  "excludedTables": [],
+  "sampleRows": 3,
+  "maxXmlScenariosPerStatement": 10,
+  "maxCandidateAttempts": 128,
+  "pageSampleSize": 3,
+  "queryTimeoutSeconds": 15
+}

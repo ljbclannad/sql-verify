@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapper namespace="example.Parts">
+    <sql id="columns">#{id} AS ${label}, #{name} AS name</sql>
+</mapper>

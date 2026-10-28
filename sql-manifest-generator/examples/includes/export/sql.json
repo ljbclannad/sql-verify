@@ -1,0 +1,9 @@
+[
+  {
+    "id": "example.IncludeMapper.find",
+    "sourceType": "XML",
+    "source": "original/Mapper.xml",
+    "parameterMode": "SAMPLE",
+    "template": "<select id=\"find\">SELECT <include refid=\"example.Parts.columns\"><property name=\"label\" value=\"id\"/></include></select>"
+  }
+]
