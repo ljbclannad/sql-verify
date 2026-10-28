@@ -76,6 +76,7 @@ dependencies {
     implementation project(':sql-query-contract')
     implementation 'cn.hutool:hutool-all:5.8.25'
     implementation 'com.alibaba.fastjson2:fastjson2:2.0.64'
+    implementation 'org.apache.poi:poi-ooxml:5.2.5'
     runtimeOnly 'com.mysql:mysql-connector-j:8.0.33'
 
     testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'

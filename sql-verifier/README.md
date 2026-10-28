@@ -202,6 +202,7 @@ Windows 使用 `bin\sql-verifier.bat --config config\verifier\verification.json`
 | `queries.jsonl` / `cases.jsonl` | 逐条同步保存结果；中断后已完整写入的行仍可读取 |
 | `verification.json` | 正常收尾后生成的正式汇总和完整证据 |
 | `verification.html` | 离线首页，支持筛选和分页 |
+| `target-execution-failures.xlsx` | 自动导出的目标库执行失败明细，含 SQL、参数、阶段、SQLState、错误码与用例 ID |
 | `html/<生成批次>/` | 独立条目详情，须与首页一起保存 |
 
 报告保存 SQL、参数、双侧行值、执行错误、读取范围和比较结论。DML 另有前后预期、回滚、恢复与清理状态。配置密码会脱敏，但业务数据仍需妥善保管。临时文件不表示运行完成，旧 HTML 批次不自动清理。
@@ -210,17 +211,19 @@ Windows 使用 `bin\sql-verifier.bat --config config\verifier\verification.json`
 | --- | --- |
 | `0` | 非空所选清单全部通过，DML 同时完成清理 |
 | `2` | 完整报告中存在错误、差异、无法判定、未执行或空清单；DML 清理已确认 |
-| `1` | 启动、配置、清单级错误，或调度、清理、写盘、HTML 生成等运行故障 |
+| `1` | 启动、配置、清单级错误，或调度、清理、写盘、HTML 或 Excel 生成等运行故障 |
 
 Gradle 将非零 Java 退出码显示为任务失败。没有有效查询时不连接数据库。公开基础示例中的 `smoke.rows31` 未声明稳定范围，预期返回 2；`smoke.error` 是故意失败的查询，默认未选中。
 
-已有完整 JSON 可离线重新生成页面，不需要配置或数据库：
+每次查询或 DML 验证生成正式 JSON 后，默认生成 Excel，无需增加配置。查询收录 `target.status=FAILED`，DML 收录 `target.execution=FAILED`，DML 错误列只列出 EXECUTE 阶段。源侧失败、结果差异、未执行及仅清理失败不计入目标执行失败；零条失败仍生成空明细，并保留运行状态和统计。SQL 或参数超出单元格限制时分行保存，按分段序号拼接。查询与 DML 分别输出在各自本轮目录，不跨轮次合并。
+
+已有完整 JSON 可离线重新生成 HTML 和 Excel，不需要配置或数据库：
 
 ```bash
 ./bin/sql-verifier --report reports/queries/<本轮目录>/verification.json
 ```
 
-源码入口为 `./gradlew :sql-verifier:verify --args='--report build/sql-verification/<本轮目录>/verification.json'`。只有 JSONL 时不能转换。转换返回 0 仅代表页面生成成功，原数据库结论不变；失败时保留 JSON 和已有首页。
+源码入口为 `./gradlew :sql-verifier:verify --args='--report build/sql-verification/<本轮目录>/verification.json'`。只有 JSONL 时不能转换。转换返回 0 仅代表 HTML 和 Excel 生成成功，原数据库结论不变；失败时保留 JSON 和已有首页。
 
 ## 受控 DML 验证
 

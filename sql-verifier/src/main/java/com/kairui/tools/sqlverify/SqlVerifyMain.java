@@ -9,6 +9,7 @@ import com.kairui.tools.sqlquery.QueryManifest;
 import com.kairui.tools.sqlquery.QueryManifestReader;
 import com.kairui.tools.sqlquery.DmlManifestReader;
 import com.kairui.tools.sqlverify.report.HtmlReportGenerator;
+import com.kairui.tools.sqlverify.report.TargetFailureExcelGenerator;
 
 import java.nio.file.Path;
 
@@ -18,6 +19,8 @@ public final class SqlVerifyMain {
     }
 
     public static void main(String[] args) {
+        // 命令行报告不使用桌面界面，避免 Excel 字体测量启动 AWT 后阻止 JVM 退出。
+        System.setProperty("java.awt.headless", "true");
         int code = run(args);
         if (code != 0) System.exit(code);
     }
@@ -57,14 +60,23 @@ public final class SqlVerifyMain {
     }
 
     private static boolean render(Path report) {
+        boolean successful = true;
         try {
             Path html = new HtmlReportGenerator().generate(report);
             System.out.println("HTML 报告：" + html);
-            return true;
         } catch (Exception exception) {
             System.err.println("HTML 报告生成失败：" + exception.getMessage());
             System.err.println("JSON 证据路径：" + report.toAbsolutePath());
-            return false;
+            successful = false;
         }
+        try {
+            Path excel = new TargetFailureExcelGenerator().generate(report);
+            System.out.println("目标库执行失败 Excel：" + excel);
+        } catch (Exception exception) {
+            System.err.println("目标库执行失败 Excel 生成失败：" + exception.getMessage());
+            System.err.println("JSON 证据路径：" + report.toAbsolutePath());
+            successful = false;
+        }
+        return successful;
     }
 }

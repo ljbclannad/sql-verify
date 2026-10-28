@@ -116,6 +116,7 @@ class VerifierDistributionTest {
         }
         JSONObject report = JSON.parseObject(Files.readString(path));
         assertTrue(Files.isRegularFile(path.resolveSibling("verification.html")));
+        assertTrue(Files.isRegularFile(path.resolveSibling("target-execution-failures.xlsx")));
         assertTrue(Files.isDirectory(path.resolveSibling("html")));
         List<JSONObject> lines = Files.readAllLines(path.resolveSibling(report.containsKey("cases") ? "cases.jsonl" : "queries.jsonl"))
                 .stream().map(JSON::parseObject).toList();
@@ -208,6 +209,7 @@ class VerifierDistributionTest {
         Outcome outcome = launch(work, List.of("--report", "verification.json"), true);
         assertEquals(0, outcome.code(), outcome.output());
         assertTrue(Files.isRegularFile(work.resolve("verification.html")));
+        assertTrue(Files.isRegularFile(work.resolve("target-execution-failures.xlsx")));
         assertTrue(outcome.output().contains("HTML 报告"));
         assertEquals(1, launch(work, List.of("--report", "缺失.json"), true).code());
         Path blocked = Files.createDirectories(work.resolve("blocked"));

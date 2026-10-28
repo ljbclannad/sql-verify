@@ -63,7 +63,7 @@ CMD 使用同一 `.bat`，通过 `%ERRORLEVEL%` 查看退出码。脚本不切�
 | --- | --- |
 | `0` | 非空所选清单全部通过；DML 已完成清理 |
 | `2` | 报告完整但存在错误、差异、无法判定、未执行或空清单；DML 清理已确认 |
-| `1` | 配置、清单级输入、调度、清理、写盘或 HTML 生成失败 |
+| `1` | 配置、清单级输入、调度、清理、写盘或 HTML / Excel 生成失败 |
 
 报告隐藏配置密码，但仍含 SQL、参数和数据，需要按业务数据要求保管。
 
@@ -133,13 +133,17 @@ MySQL 协议下要求事务表引擎明确为 InnoDB 或 YashanDB，并核查唯
 
 回滚成功不等于恢复通过，应看逐侧清理证据。不支持提交、XA、重试或补偿；自增、序列和外部副作用不保证恢复。
 
-## 6. 已有 JSON 重新生成 HTML
+## 6. 自动导出 Excel 与离线重生成
+
+每次验证生成正式 JSON 后，自动在同目录生成 `target-execution-failures.xlsx`，无需额外配置。文件只收录目标侧查询 FAILED 或 DML execution FAILED，包含 SQL、参数、错误阶段、SQLState、错误码和用例 ID；不含源侧失败、差异、未执行或仅清理失败。零条失败仍导出空明细，运行状态和全轮统计保留在末尾。长 SQL、参数或错误分行保存，按分段序号拼接；查询与 DML 各自生成，不跨轮次合并。
+
+以下命令离线重生成 HTML 和 Excel：
 
 ```bash
 ./bin/sql-verifier --report reports/queries/<本轮目录>/verification.json
 ```
 
-无需配置或数据库，`--report` 与 `--config` 二选一；页面写入 JSON 所在目录。只有 JSONL 时不能转换。转换成功返回 0 只代表页面生成成功，原数据库结论不变；失败时保留原 JSON 和已有首页，旧详情批次不自动清理。
+无需配置或数据库，`--report` 与 `--config` 二选一；HTML 和 Excel 写入 JSON 所在目录。只有 JSONL 时不能转换。转换成功返回 0 只代表 HTML 和 Excel 生成成功，原数据库结论不变；失败时保留原 JSON 和已有首页，旧详情批次不自动清理。
 
 可先把[人工查询报告](../../../examples/verifier/reports/query/verification.json)或[人工 DML 报告](../../../examples/verifier/reports/dml/verification.json)复制到自己的输出目录再转换。这些是阅读样例，不是数据库验证记录。
 
